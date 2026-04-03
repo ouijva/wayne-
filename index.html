@@ -1,0 +1,2721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BW — Personal Device</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0c;
+    --surface: #121216;
+    --surface2: #1a1a20;
+    --border: rgba(255,255,255,0.07);
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --text: #e8e4dc;
+    --text-dim: #8a8680;
+    --text-faint: #4a4845;
+    --red: #c0392b;
+    --blue: #2980b9;
+    --green: #27ae60;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: #050507;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    overflow: hidden;
+  }
+
+  /* ── PHONE SHELL ── */
+  .phone {
+    width: 390px;
+    height: 844px;
+    background: var(--bg);
+    border-radius: 50px;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    box-shadow:
+      0 0 0 6px #111114,
+      0 0 0 8px rgba(255,255,255,0.05),
+      0 40px 80px rgba(0,0,0,0.9),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+  }
+
+  /* notch */
+  .phone::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 30px;
+    background: #050507;
+    border-radius: 0 0 20px 20px;
+    z-index: 100;
+  }
+
+  /* status bar */
+  .status-bar {
+    height: 44px;
+    padding: 12px 28px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .status-time {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.5px;
+  }
+  .status-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .status-icons span {
+    font-size: 11px;
+    color: var(--text);
+  }
+
+/* ── SCREENS ── */
+.screen {
+  display: none;
+  position: absolute;
+  top: 44px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.screen.active {
+  display: flex;
+}
+
+  /* ── LOCK SCREEN ── */
+  #lock {
+    background: linear-gradient(160deg, #0d0d10 0%, #0a0a0c 40%, #0c0c10 100%);
+    align-items: center;
+    padding: 20px 0 40px;
+    cursor: pointer;
+  }
+  .lock-bg-pattern {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 200px 200px at 20% 30%, rgba(201,168,76,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 300px 300px at 80% 70%, rgba(201,168,76,0.03) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .lock-logo {
+    margin-top: 40px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .lock-time {
+    margin-top: 30px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 82px;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+  .lock-date {
+    margin-top: 8px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* lock notifications */
+  .lock-notifs {
+    margin-top: 50px;
+    width: 100%;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .lock-notif {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .lock-notif-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .lock-notif-content {}
+  .lock-notif-app { font-size: 10px; color: var(--text-dim); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 3px; }
+  .lock-notif-text { font-size: 13px; color: var(--text); line-height: 1.4; font-family: 'Cormorant Garamond', serif; font-size: 15px; }
+
+  .lock-hint {
+    margin-top: auto;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+
+  /* ── HOME SCREEN ── */
+#home {
+  padding: 0;
+  flex-direction: column;
+}
+  .home-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 0 16px;
+  }
+  .home-scroll::-webkit-scrollbar { display: none; }
+  .home-dock {
+    flex-shrink: 0;
+    margin: 0 20px 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 28px;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    backdrop-filter: blur(20px);
+  }
+  .home-header {
+    padding: 16px 28px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .home-greeting {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--text-dim);
+  }
+  .home-date {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+
+  .home-wallpaper-accent {
+    height: 120px;
+    margin: 20px 24px 0;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #12120f 0%, #1a1812 50%, #0f0f0d 100%);
+    border: 1px solid rgba(201,168,76,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-wallpaper-accent::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+  }
+  .hw-label { font-size: 10px; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; opacity: 0.8; }
+  .hw-value { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--text); font-weight: 300; }
+  .hw-sub { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+  .hw-badge {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-align: center;
+  }
+  .hw-badge-num { font-family: 'Cormorant Garamond', serif; font-size: 32px; color: var(--gold); line-height: 1; }
+  .hw-badge-label { font-size: 9px; letter-spacing: 1.5px; color: var(--text-dim); text-transform: uppercase; margin-top: 2px; }
+
+  /* app grid */
+  .app-grid {
+    padding: 24px 24px 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .app-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+  }
+  .app-icon {
+    width: 62px; height: 62px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    position: relative;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .app-item:active .app-icon { transform: scale(0.92); }
+  .app-badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    background: var(--red);
+    color: #fff;
+    font-size: 9px;
+    min-width: 16px; height: 16px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 4px;
+    border: 1.5px solid var(--bg);
+  }
+  .app-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+
+  /* dock */
+  .dock {
+    margin: 20px 24px 0;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  /* ── INNER SCREEN HEADER ── */
+  .inner-header {
+    padding: 12px 24px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .back-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-dim);
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.09); }
+  .inner-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: 0.3px;
+  }
+  .inner-subtitle { font-size: 10px; color: var(--text-dim); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px; }
+
+  /* ── MESSAGES APP ── */
+  #messages .inner-header { padding-top: 10px; }
+  .msg-list { flex: 1; overflow-y: auto; padding: 8px 0; }
+  .msg-list::-webkit-scrollbar { display: none; }
+  .msg-thread {
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: background 0.12s;
+  }
+.msg-thread:hover { background: rgba(255,255,255,0.03); }
+
+.thread-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.thread-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thread-info { flex: 1; min-width: 0; }
+.thread-name { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text); margin-bottom: 3px; }
+.thread-preview { font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thread-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.thread-time { font-size: 10px; color: var(--text-faint); }
+.thread-unread {
+  background: var(--gold);
+  color: var(--bg);
+  font-size: 9px;
+  min-width: 16px; height: 16px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 4px;
+  font-weight: 600;
+}
+
+  /* ── CHAT VIEW ── */
+  #chat {
+    flex-direction: column;
+  }
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .chat-messages::-webkit-scrollbar { display: none; }
+  .chat-bubble-wrap {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+  }
+  .chat-bubble-wrap.sent { align-self: flex-end; align-items: flex-end; }
+  .chat-bubble-wrap.recv { align-self: flex-start; align-items: flex-start; }
+  .chat-bubble {
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 13px;
+    line-height: 1.5;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+  }
+  .chat-bubble-wrap.sent .chat-bubble {
+    background: linear-gradient(135deg, #1e1c16, #1a1810);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-bottom-right-radius: 4px;
+    color: var(--text);
+  }
+  .chat-bubble-wrap.recv .chat-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+    color: var(--text);
+  }
+  .chat-time { font-size: 9px; color: var(--text-faint); margin-top: 3px; letter-spacing: 0.5px; }
+
+  .chat-input-bar {
+    padding: 12px 16px 16px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .chat-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    font-family: 'DM Mono', monospace;
+  }
+  .chat-input::placeholder { color: var(--text-faint); }
+  .chat-send {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--bg);
+    flex-shrink: 0;
+  }
+
+.gallery-body {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 2px;
+  background: #000;
+}
+
+.gallery-photo {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  border-radius: 0;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.gallery-photo:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+.gallery-body::-webkit-scrollbar { display: none; }
+
+/* ── FULLSCREEN PHOTO VIEWER ── */
+.photo-viewer {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.photo-viewer.active {
+  display: flex;
+  opacity: 1;
+}
+
+.photo-viewer-top {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 16px 0;
+}
+
+.viewer-close {
+  background: transparent;
+  border: none;
+  color: #0a84ff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.photo-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.photo-viewer { backdrop-filter: blur(8px); }
+.viewer-close { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; font-weight: 500; }
+.viewer-image { will-change: transform, opacity; }
+.photo-viewer.closing .viewer-image { transition: transform 0.2s ease, opacity 0.2s ease; }
+.photo-stage { touch-action: none; }
+
+.viewer-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+  /* ── ASE SYSTEM ── */
+  #ase { flex-direction: column; }
+  .ase-body { flex: 1; overflow-y: auto; padding: 16px; }
+  .ase-body::-webkit-scrollbar { display: none; }
+  .ase-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .ase-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+  .ase-stat-label { font-size: 9px; letter-spacing: 2px; color: var(--text-faint); text-transform: uppercase; margin-bottom: 6px; }
+  .ase-stat-value { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: var(--text); line-height: 1; }
+  .ase-stat-sub { font-size: 10px; color: var(--text-dim); margin-top: 3px; }
+  .ase-stat.alert { border-color: rgba(201,168,76,0.3); background: rgba(201,168,76,0.04); }
+  .ase-stat.alert .ase-stat-value { color: var(--gold); }
+
+  .ase-section-label { font-size: 9px; letter-spacing: 3px; color: var(--text-faint); text-transform: uppercase; margin: 16px 0 8px; padding-left: 2px; }
+  .ase-entry { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 8px; }
+  .ase-entry-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .ase-entry-name { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--text); }
+  .ase-entry-tag { font-size: 9px; letter-spacing: 1.5px; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; }
+  .tag-monitor { background: rgba(41,128,185,0.15); color: #5dade2; border: 1px solid rgba(41,128,185,0.3); }
+  .tag-active { background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+  .tag-closed { background: rgba(255,255,255,0.04); color: var(--text-faint); border: 1px solid var(--border); }
+  .ase-bar-wrap { height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+  .ase-bar { height: 100%; border-radius: 2px; }
+  .ase-bar-label { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-dim); margin-top: 5px; }
+
+  /* ── WAYNE ENTERPRISES ── */
+  #wenterprise .we-body { flex: 1; overflow-y: auto; padding: 16px; }
+  .we-body::-webkit-scrollbar { display: none; }
+  .we-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.15s; }
+  .we-card:hover { border-color: rgba(201,168,76,0.2); }
+  .we-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .we-card-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--text); }
+  .we-card-time { font-size: 9px; color: var(--text-faint); letter-spacing: 1px; }
+  .we-card-body { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+  .we-divider { height: 1px; background: var(--border); margin: 6px 0 14px; }
+  .we-tag { display: inline-block; font-size: 9px; letter-spacing: 1.5px; padding: 2px 8px; border-radius: 5px; text-transform: uppercase; margin-top: 8px; }
+  .we-tag.conf { background: rgba(192,57,43,0.12); color: #e74c3c; border: 1px solid rgba(192,57,43,0.25); }
+  .we-tag.info { background: rgba(255,255,255,0.04); color: var(--text-faint); border: 1px solid var(--border); }
+
+  /* ── NOTES APP ── */
+  #notes .notes-body { flex: 1; overflow-y: auto; padding: 16px; }
+  .notes-body::-webkit-scrollbar { display: none; }
+  .note-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; cursor: pointer; }
+  .note-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--text); margin-bottom: 6px; }
+  .note-preview { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+  .note-date { font-size: 9px; color: var(--text-faint); margin-top: 8px; letter-spacing: 1px; }
+
+   /* ── SOCIAL FEED SCREENS ── */
+#instagram, #ig-profile {
+  flex-direction: column;
+  position: relative;
+}
+
+#twitter, #tiktok {
+  flex-direction: column;
+}
+
+.social-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 0 70px;
+  min-height: 0;
+}
+  .social-body::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Instagram */
+  .ig-stories {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .ig-stories::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ig-story {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .ig-story-ring {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(45deg, #c9a84c, #e8c97a, #c9a84c);
+  }
+
+  .ig-story-ring.seen {
+    background: rgba(255,255,255,0.1);
+  }
+
+.ig-story-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface2);
+  border: 2px solid var(--bg);
+  display: block;
+}
+
+.ig-story-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+  .ig-story-name {
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.3px;
+  }
+
+  .ig-post {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+    margin-bottom: 2px;
+  }
+
+  .ig-post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+.ig-post-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: block;
+  flex-shrink: 0;
+}
+
+.ig-post-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+  .ig-post-user {
+    font-size: 15px;
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .ig-post-location {
+    font-size: 10px;
+    color: var(--text-faint);
+  }
+
+  .ig-post-img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ig-post-actions {
+    display: flex;
+    gap: 14px;
+    padding: 10px 14px 4px;
+    font-size: 20px;
+  }
+
+  .ig-post-actions span {
+    cursor: pointer;
+    opacity: 0.7;
+  }
+
+  .ig-post-actions span:hover {
+    opacity: 1;
+  }
+
+  .ig-post-likes {
+    font-size: 14px;
+    color: var(--text);
+    padding: 0 14px 4px;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .ig-post-caption {
+    font-size: 14px;
+    color: var(--text-dim);
+    padding: 0 14px 8px;
+    line-height: 1.5;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .ig-post-time {
+    font-size: 9px;
+    color: var(--text-faint);
+    padding: 0 14px 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* X / Twitter */
+  .x-post {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .x-post:hover {
+    background: rgba(255,255,255,0.02);
+  }
+
+ .x-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.x-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+  .x-post-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .x-post-header {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+
+ .x-post-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+  .x-post-handle {
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+
+  .x-post-time {
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-left: auto;
+  }
+
+  .x-post-text {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    font-family: 'Cormorant Garamond', serif;
+    margin-bottom: 8px;
+  }
+
+  .x-post-actions {
+    display: flex;
+    gap: 20px;
+  }
+
+  .x-action {
+    font-size: 10px;
+    color: var(--text-faint);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+
+  .x-action:hover {
+    color: var(--text-dim);
+  }
+
+  /* SVG icons for social */
+  .social-icon-svg {
+    width: 26px;
+    height: 26px;
+    fill: currentColor;
+  }
+
+  /* ── INSTAGRAM BOTTOM NAV ── */
+.ig-bottom-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 58px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0 12px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  z-index: 20;
+}
+
+  .ig-nav-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    border-radius: 50%;
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .ig-nav-btn:hover,
+  .ig-nav-btn.active {
+    color: var(--text);
+  }
+
+  .ig-nav-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+  }
+
+  /* ── INSTAGRAM PROFILE ── */
+.ig-profile-body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding-bottom: 70px;
+}
+
+  .ig-profile-body::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ig-profile-header {
+    padding: 16px 16px 0;
+  }
+
+  .ig-profile-top {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 14px;
+  }
+
+  .ig-profile-avatar-wrap {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    padding: 2.5px;
+    background: linear-gradient(45deg, #c9a84c, #e8c97a, #c9a84c);
+    flex-shrink: 0;
+  }
+
+.ig-profile-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #1a1814;
+  border: 2.5px solid var(--bg);
+  display: block;
+}
+
+.ig-profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+  .ig-profile-stats {
+    display: flex;
+    gap: 18px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .ig-profile-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .ig-profile-stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .ig-profile-stat-label {
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+  }
+
+  .ig-profile-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .ig-profile-handle {
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .ig-profile-bio {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    font-family: 'Cormorant Garamond', serif;
+    margin-bottom: 12px;
+  }
+
+  .ig-profile-btn-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .ig-profile-btn {
+    flex: 1;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    text-align: center;
+    transition: background 0.15s;
+  }
+
+  .ig-profile-btn:hover {
+    background: rgba(255,255,255,0.09);
+  }
+
+  .ig-profile-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .ig-profile-thumb {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .ig-profile-thumb:hover {
+    opacity: 0.85;
+  }
+
+  /* ── TIKTOK ── */
+  #tiktok { flex-direction: column; }
+  .tiktok-feed { flex: 1; overflow-y: auto; background: #000; position: relative; }
+  .tiktok-feed::-webkit-scrollbar { display: none; }
+
+  .tt-video-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9/16;
+    background: #0a0a0c;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .tt-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.55);
+  }
+  .tt-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px 12px 20px;
+  }
+  .tt-right-actions {
+    position: absolute;
+    right: 10px;
+    bottom: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+  .tt-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    color: #fff;
+  }
+  .tt-action svg { width: 28px; height: 28px; fill: #fff; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.7)); }
+  .tt-action-count { font-size: 10px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); letter-spacing: 0.3px; }
+  .tt-avatar-ring {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #c9a84c, #e8c97a);
+    padding: 2px;
+    margin-bottom: 4px;
+  }
+  .tt-avatar-inner {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 2px solid #000;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gold);
+  }
+
+  .tt-user { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; text-shadow: 0 1px 4px rgba(0,0,0,0.8); letter-spacing: 0.2px; }
+  .tt-caption { font-size: 12px; color: rgba(255,255,255,0.88); line-height: 1.5; text-shadow: 0 1px 3px rgba(0,0,0,0.8); margin-bottom: 10px; font-family: 'Cormorant Garamond', serif; font-size: 14px; }
+  .tt-sound { font-size: 10px; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 4px; }
+
+  .tt-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0 12px;
+    background: #000;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .tt-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.5);
+    font-size: 9px;
+    letter-spacing: 0.3px;
+    transition: color 0.15s;
+  }
+  .tt-nav-item.active { color: #fff; }
+  .tt-nav-item svg { width: 22px; height: 22px; fill: currentColor; }
+  .tt-add-btn {
+    position: relative;
+    width: 42px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tt-add-bg {
+    position: absolute;
+    width: 36px; height: 26px;
+    border-radius: 7px;
+    background: #fff;
+  }
+  .tt-add-bg.cyan { background: #69C9D0; transform: translateX(-3px); border-radius: 7px; }
+  .tt-add-bg.red  { background: #EE1D52; transform: translateX(3px);  border-radius: 7px; }
+  .tt-add-plus {
+    position: relative;
+    z-index: 2;
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+    line-height: 1;
+  }
+
+  /* ── INSTAGRAM STORY VIEWER ── */
+  .ig-story-viewer {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    z-index: 300;
+    display: none;
+    flex-direction: column;
+  }
+  .ig-story-viewer.active { display: flex; }
+
+  .story-progress-bar {
+    display: flex;
+    gap: 4px;
+    padding: 10px 12px 6px;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 10;
+  }
+  .story-seg {
+    flex: 1;
+    height: 2px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .story-seg-fill {
+    height: 100%;
+    background: #fff;
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+  .story-seg-fill.done { width: 100%; transition: none; }
+  .story-seg-fill.active { width: 0%; }
+
+  .story-top-bar {
+    position: absolute;
+    top: 22px; left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    z-index: 10;
+  }
+  .story-avatar-sm {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #1a1814;
+    border: 1.5px solid #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+  .story-username { font-size: 13px; font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+  .story-time-lbl { font-size: 11px; color: rgba(255,255,255,0.6); }
+  .story-close {
+    margin-left: auto;
+    font-size: 22px;
+    color: #fff;
+    cursor: pointer;
+    line-height: 1;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    background: none;
+    border: none;
+    padding: 0 4px;
+  }
+
+  .story-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .story-tap-left, .story-tap-right {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 40%;
+    z-index: 5;
+    cursor: pointer;
+  }
+  .story-tap-left { left: 0; }
+  .story-tap-right { right: 0; }
+
+  /* ── IG notification/header bar clickable ── */
+  .ig-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px 0;
+    flex-shrink: 0;
+  }
+  .ig-top-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--text);
+    letter-spacing: 0.3px;
+  }
+  .ig-top-actions {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  .ig-top-btn {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    border-radius: 50%;
+    position: relative;
+    transition: color 0.15s;
+  }
+  .ig-top-btn:hover { color: var(--text); }
+  .ig-top-btn svg { width: 22px; height: 22px; fill: currentColor; }
+  .ig-notif-dot {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 8px; height: 8px;
+    background: var(--red);
+    border-radius: 50%;
+    border: 1.5px solid var(--bg);
+  }
+
+  /* IG notifications panel */
+  .ig-notif-panel {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg);
+    z-index: 250;
+    display: none;
+    flex-direction: column;
+  }
+  .ig-notif-panel.active { display: flex; }
+  .ig-notif-panel-header {
+    padding: 14px 16px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .ig-notif-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .ig-notif-item:hover { background: rgba(255,255,255,0.03); }
+.ig-notif-av {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface2);
+  display: block;
+  flex-shrink: 0;
+}
+
+.ig-notif-av img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+  .ig-notif-text { font-size: 13px; color: var(--text-dim); line-height: 1.4; font-family: 'Cormorant Garamond', serif; font-size: 14px; }
+.ig-notif-text strong { color: var(--text); }
+.ig-notif-ago {
+  font-size: 10px;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.screen.active {
+  animation: fadeSlide 0.2s ease;
+}
+
+  /* pulse dot */
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .pulse { animation: pulse 2s infinite; }
+
+  * { scrollbar-width: none; }
+/* === INSTAGRAM NAV FINAL OVERRIDE === */
+#instagram,
+#ig-profile {
+  position: relative !important;
+}
+
+#instagram .social-body {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+  padding-bottom: 84px !important;
+}
+
+#ig-profile .ig-profile-body {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+  padding-bottom: 84px !important;
+}
+
+#instagram .ig-bottom-nav,
+#ig-profile .ig-bottom-nav {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 23px !important;
+  height: 64px !important;
+  display: flex !important;
+  justify-content: space-around !important;
+  align-items: center !important;
+  padding: 6px 0 8px !important;
+  background: rgba(10, 10, 12, 0.98) !important;
+  border-top: 1px solid rgba(255,255,255,0.12) !important;
+  z-index: 999 !important;
+}
+
+#instagram .ig-nav-btn,
+#ig-profile .ig-nav-btn {
+  width: 44px !important;
+  height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #d8d2c8 !important;
+  opacity: 1 !important;
+}
+
+#instagram .ig-nav-btn svg,
+#ig-profile .ig-nav-btn svg {
+  width: 24px !important;
+  height: 24px !important;
+  fill: currentColor !important;
+}
+
+#instagram .ig-nav-btn.active,
+#ig-profile .ig-nav-btn.active {
+  color: #ffffff !important;
+}
+
+:root {
+  --ig-font: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Force Instagram sections to use iPhone system font */
+#instagram,
+#instagram *,
+#ig-profile,
+#ig-profile * {
+  font-family: var(--ig-font);
+}
+
+/* Make profile grid more realistic (taller posts) */
+.ig-profile-thumb {
+  aspect-ratio: 3 / 4;
+}
+
+/* Fix Instagram header styling */
+.ig-top-logo {
+  font-size: 20px;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: -0.2px;
+}
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span class="status-time" id="clock">9:41</span>
+    <div class="status-icons">
+      <span>▲▲▲</span>
+      <span>WiFi</span>
+      <span>█████</span>
+    </div>
+  </div>
+
+  <!-- ══ LOCK SCREEN ══ -->
+  <div class="screen active" id="lock" onclick="goTo('home')">
+    <div class="lock-bg-pattern"></div>
+    <div class="lock-logo">Wayne · Personal Device</div>
+    <div class="lock-time" id="lockClock">9:41</div>
+    <div class="lock-date">Wednesday, April 2</div>
+
+    <div class="lock-notifs">
+      <div class="lock-notif">
+        <div class="lock-notif-icon" style="background:rgba(201,168,76,0.1);">🛡</div>
+        <div class="lock-notif-content">
+          <div class="lock-notif-app">Alfred · Pennyworth</div>
+          <div class="lock-notif-text">Your 8pm reservation confirmed. I've also pressed the grey suit — anticipating you'll want it.</div>
+        </div>
+      </div>
+      <div class="lock-notif">
+        <div class="lock-notif-icon" style="background:rgba(41,128,185,0.1);">⚙️</div>
+        <div class="lock-notif-content">
+          <div class="lock-notif-app">ASE System</div>
+          <div class="lock-notif-text">Simulation cycle complete. 1 subject flagged — review pending.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lock-hint">tap to unlock</div>
+  </div>
+
+  <!-- ══ HOME SCREEN ══ -->
+  <div class="screen" id="home">
+    <div class="home-scroll">
+      <div class="home-header">
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:11px;color:var(--text-faint);letter-spacing:2px;text-transform:uppercase">Personal</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);margin-top:2px">Good morning, Bruce.</div>
+        </div>
+        <div style="font-size:10px;letter-spacing:1.5px;color:var(--text-faint);text-align:right;text-transform:uppercase">Apr 2<br>2026</div>
+      </div>
+
+      <div class="home-wallpaper-accent">
+        <div>
+          <div class="hw-label">ASE · Last Run</div>
+          <div class="hw-value">1,847</div>
+          <div class="hw-sub">simulations completed</div>
+        </div>
+        <div class="hw-badge">
+          <div class="hw-badge-num">3</div>
+          <div class="hw-badge-label">Alerts</div>
+        </div>
+      </div>
+
+      <div class="app-grid">
+        <div class="app-item" onclick="goTo('messages')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#1a1a14,#2a2818);">
+            <img src="https://i.postimg.cc/2S1PFvQj/IMG_8186.png" alt="Messages" style="width:60%;height:60%;">
+            <div class="app-badge">4</div>
+          </div>
+          <div class="app-label">Messages</div>
+        </div>
+        <div class="app-item" onclick="goTo('ase')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#0d1520,#0a1018);">
+            🧠
+            <div class="app-badge" style="background:var(--gold);color:var(--bg);">!</div>
+          </div>
+          <div class="app-label">ASE</div>
+        </div>
+        <div class="app-item" onclick="goTo('gallery')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#0a0d14,#0c1018);">
+            <img src="https://i.postimg.cc/jSDGQNHx/IMG_8185.webp" alt="Gallery" style="width:60%;height:60%;">
+          </div>
+          <div class="app-label">Photo Gallery</div>
+        </div>
+        <div class="app-item" onclick="goTo('wenterprise')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#14100a,#1e1810);">
+            <img src="https://i.postimg.cc/g211MJsL/IMG_8192.png" alt="WE Comms" style="width:60%;height:60%;">
+          </div>
+          <div class="app-label">WE Comms</div>
+        </div>
+        <div class="app-item" onclick="goTo('notes')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#0f0f0a,#1a1a12);">
+            <img src="https://i.postimg.cc/DwRRCZ6h/IMG_8188.png" alt="Notes" style="width:60%;height:60%;">
+          </div>
+          <div class="app-label">Notes</div>
+        </div>
+        <div class="app-item">
+          <div class="app-icon" style="background:linear-gradient(135deg,#0a0d14,#0c1018);">
+            <img src="https://i.postimg.cc/85bpQWX3/IMG_8196.webp" alt="Secure Cam" style="width:60%;height:60%;">
+          </div>
+          <div class="app-label">Secure Cam</div>
+        </div>
+        <div class="app-item">
+          <div class="app-icon" style="background:linear-gradient(135deg,#14100a,#1e1408);">
+            <img src="https://i.postimg.cc/W1xx9382/IMG_8189.png" alt="Cipher" style="width:60%;height:60%;">
+            <div class="app-badge">12</div>
+          </div>
+          <div class="app-label">Cipher</div>
+        </div>
+        <div class="app-item">
+          <div class="app-icon" style="background:linear-gradient(135deg,#0d0d14,#141420);">
+            <img src="https://i.postimg.cc/wjnnWv2M/IMG_8191.webp" alt="Vault" style="width:60%;height:60%;">
+          </div>
+          <div class="app-label">Vault</div>
+        </div>
+        <div class="app-item">
+          <div class="app-icon" style="background:linear-gradient(135deg,#0a140a,#0c1a0c);">
+            <img src="https://i.postimg.cc/P5006xyY/IMG_8195.png" alt="Comms" style="width:60%;height:60%;">
+          </div>
+          <div class="app-label">Comms</div>
+        </div>
+
+        <!-- ── INSTAGRAM ── -->
+        <div class="app-item" onclick="goTo('instagram')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#1a0f18,#200d1a,#1a1010);">
+            <svg viewBox="0 0 24 24" class="social-icon-svg" style="color:rgba(220,180,200,0.85);">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </div>
+          <div class="app-label">Instagram</div>
+        </div>
+
+        <!-- ── X (TWITTER) ── -->
+        <div class="app-item" onclick="goTo('twitter')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#0c0c0e,#141418);">
+            <svg viewBox="0 0 24 24" class="social-icon-svg" style="color:rgba(220,215,205,0.85);">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </div>
+          <div class="app-label">X</div>
+        </div>
+
+        <!-- ── TIKTOK ── -->
+        <div class="app-item" onclick="goTo('tiktok')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#080810,#0d0d14);">
+            <svg viewBox="0 0 24 24" class="social-icon-svg" style="color:rgba(255,255,255,0.88);">
+              <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/>
+            </svg>
+          </div>
+          <div class="app-label">TikTok</div>
+        </div>
+      </div>
+    </div><!-- end home-scroll -->
+
+    <!-- ── DOCK pinned to bottom ── -->
+    <div class="home-dock">
+      <div class="app-item" onclick="goTo('messages')" style="gap:0;">
+        <div class="app-icon" style="width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,0.04);">
+          <img src="https://i.postimg.cc/2S1PFvQj/IMG_8186.png" alt="Messages" style="width:32px;height:32px;">
+        </div>
+      </div>
+      <div class="app-item" onclick="goTo('calls')" style="gap:0;">
+        <div class="app-icon" style="width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,0.04);">
+          <img src="https://i.postimg.cc/Z5W1F38K/IMG_8187.webp" alt="Calls" style="width:32px;height:32px;">
+        </div>
+      </div>
+      <div class="app-item" onclick="goTo('ase')" style="gap:0;">
+        <div class="app-icon" style="width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,0.04);">
+          <img src="https://i.postimg.cc/g211MJsL/IMG_8192.png" alt="ASE" style="width:32px;height:32px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MESSAGES LIST ══ -->
+  <div class="screen" id="messages" style="flex-direction:column;">
+    <div class="inner-header">
+      <div class="back-btn" onclick="goTo('home')">‹</div>
+      <div>
+        <div class="inner-title">Messages</div>
+        <div class="inner-subtitle">4 unread</div>
+      </div>
+    </div>
+    <div class="msg-list">
+      <div class="msg-thread" onclick="openChat('alfred')">
+        <div class="thread-avatar">
+  <img src="https://i.postimg.cc/pX7ChQ8v/IMG_8206.jpg" alt="Alfred">
+</div>
+        <div class="thread-info">
+          <div class="thread-name">Alfred</div>
+          <div class="thread-preview">Your 8pm reservation confirmed. I've pressed the grey suit...</div>
+        </div>
+        <div class="thread-meta">
+          <div class="thread-time">9:02</div>
+          <div class="thread-unread">2</div>
+        </div>
+      </div>
+      <div class="msg-thread" onclick="openChat('diana')">
+        <div class="thread-avatar">
+  <img src="https://i.postimg.cc/kXZs6NSZ/IMG_8207.jpg" alt="Diana">
+</div>
+        <div class="thread-info">
+          <div class="thread-name">Diana</div>
+          <div class="thread-preview">You went to the Planet in person? Bruce.</div>
+        </div>
+        <div class="thread-meta">
+          <div class="thread-time">8:47</div>
+          <div class="thread-unread">1</div>
+        </div>
+      </div>
+      <div class="msg-thread" onclick="openChat('lucius')">
+     <div class="thread-avatar">
+  <img src="https://i.postimg.cc/4xW9Hsjx/r2xs2tt0jb8r3luuu20np4pgt0ar.png" alt="Lucius">
+</div>
+        <div class="thread-info">
+          <div class="thread-name">Lucius Fox</div>
+          <div class="thread-preview">Q3 board deck needs your approval before Thursday.</div>
+        </div>
+        <div class="thread-meta">
+          <div class="thread-time">Tue</div>
+        </div>
+      </div>
+      <div class="msg-thread" onclick="openChat('barry')">
+        <div class="thread-avatar">
+  <img src="https://i.postimg.cc/023nMGSX/IMG_8208.jpg" alt="Barry">
+</div>
+        <div class="thread-info">
+          <div class="thread-name">Barry</div>
+          <div class="thread-preview">wait are you actually investigating Clark Kent rn 💀</div>
+        </div>
+        <div class="thread-meta">
+          <div class="thread-time">Mon</div>
+          <div class="thread-unread">1</div>
+        </div>
+      </div>
+      <div class="msg-thread" onclick="openChat('we')">
+      <div class="thread-avatar">
+  <img src="https://i.postimg.cc/g211MJsL/IMG_8192.png" alt="Wayne Enterprises">
+</div>
+        <div class="thread-info">
+          <div class="thread-name">WE Security</div>
+          <div class="thread-preview">Perimeter check complete. No anomalies logged.</div>
+        </div>
+        <div class="thread-meta">
+          <div class="thread-time">Mon</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CHAT VIEW ══ -->
+  <div class="screen" id="chat" style="flex-direction:column;">
+    <div class="inner-header" id="chatHeader">
+      <div class="back-btn" onclick="goTo('messages')">‹</div>
+      <div>
+        <div class="inner-title" id="chatName">Alfred</div>
+        <div class="inner-subtitle" id="chatStatus">Active now</div>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-bar">
+      <input class="chat-input" placeholder="Message..." id="chatInput">
+      <button class="chat-send" onclick="sendMsg()">↑</button>
+    </div>
+  </div>
+
+  <!-- ══ ASE SYSTEM ══ -->
+  <div class="screen" id="ase" style="flex-direction:column;">
+    <div class="inner-header">
+      <div class="back-btn" onclick="goTo('home')">‹</div>
+      <div>
+        <div class="inner-title">ASE System</div>
+        <div class="inner-subtitle" style="color:var(--gold)"><span class="pulse">●</span> All Seeing Eye · Active</div>
+      </div>
+    </div>
+    <div class="ase-body">
+      <div class="ase-stat-grid">
+        <div class="ase-stat alert">
+          <div class="ase-stat-label">Simulations Run</div>
+          <div class="ase-stat-value">1,847</div>
+          <div class="ase-stat-sub">Subject: Superman </div>
+        </div>
+        <div class="ase-stat alert">
+          <div class="ase-stat-label">Threat Outcome</div>
+          <div class="ase-stat-value">1,845</div>
+          <div class="ase-stat-sub">only 2 of 1,847 converge</div>
+        </div>
+        <div class="ase-stat">
+          <div class="ase-stat-label">Safe Outcomes</div>
+          <div class="ase-stat-value">2</div>
+          <div class="ase-stat-sub">margin clearly insufficient</div>
+        </div>
+        <div class="ase-stat">
+          <div class="ase-stat-label">Confidence</div>
+          <div class="ase-stat-value">99.9%</div>
+          <div class="ase-stat-sub">methodology verified ×3</div>
+        </div>
+      </div>
+      <div class="ase-section-label">Active Subjects</div>
+      <div class="ase-entry">
+        <div class="ase-entry-top">
+          <div class="ase-entry-name">Superman</div>
+          <div class="ase-entry-tag tag-active">Active</div>
+        </div>
+        <div class="ase-bar-wrap"><div class="ase-bar" style="width:99%;background:linear-gradient(90deg,var(--gold),#e8c97a);"></div></div>
+        <div class="ase-bar-label"><span>Threat convergence</span><span style="color:var(--gold)">99.9%</span></div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.6;">Fracture points could be neurological interference, grief pathway, targeted bad actor. Too many things could destabilise. Status: Phase 1 engagement initiated.</div>
+      </div>
+      <div class="ase-entry">
+        <div class="ase-entry-top">
+          <div class="ase-entry-name">Lex Luthor</div>
+          <div class="ase-entry-tag tag-monitor">Monitor</div>
+        </div>
+        <div class="ase-bar-wrap"><div class="ase-bar" style="width:72%;background:linear-gradient(90deg,#2980b9,#5dade2);"></div></div>
+        <div class="ase-bar-label"><span>Activity index</span><span style="color:#5dade2">72%</span></div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.6;">Quarterly LexCorp board movements. No direct threat indicators this cycle.</div>
+      </div>
+      <div class="ase-entry">
+        <div class="ase-entry-top">
+          <div class="ase-entry-name">Gotham Port — Cell 7</div>
+          <div class="ase-entry-tag tag-closed">Closed</div>
+        </div>
+        <div class="ase-bar-wrap"><div class="ase-bar" style="width:0%;background:#555;"></div></div>
+        <div class="ase-bar-label"><span>Threat index</span><span>0% — resolved</span></div>
+      </div>
+      <div style="font-size:9px;color:var(--text-faint);margin-top:8px;letter-spacing:1px;">— Methodology note, B. Wayne · 3/31/26</div>
+    </div>
+  </div>
+
+  <!-- ══ PHOTO GALLERY ══ -->
+  <div class="screen" id="gallery" style="flex-direction:column;">
+    <div class="inner-header">
+      <div class="back-btn" onclick="goTo('home')">‹</div>
+      <div>
+        <div class="inner-title">Photos</div>
+        <div class="inner-subtitle">Recents</div>
+      </div>
+    </div>
+    <div class="gallery-body">
+      <img src="https://i.postimg.cc/3NbKShWX/IMG_8173.jpg" class="gallery-photo" onclick="openPhoto(this.src)">
+      <img src="https://i.postimg.cc/h4CPPLMj/IMG_8143.jpg" class="gallery-photo" onclick="openPhoto(this.src)">
+      <img src="https://i.postimg.cc/0jH8Wvbg/IMG_8144.jpg" class="gallery-photo" onclick="openPhoto(this.src)">
+      <img src="https://i.postimg.cc/HnPpZmjP/IMG_8146.jpg" class="gallery-photo" onclick="openPhoto(this.src)">
+      <img src="https://i.postimg.cc/wMb6fz3h/IMG_8165.jpg" class="gallery-photo" onclick="openPhoto(this.src)">
+      <img src="https://i.postimg.cc/rsY8nTzx/IMG_8166.jpg" class="gallery-photo" onclick="openPhoto(this.src)">
+      <img src="https://i.postimg.cc/Wzf2WVtq/IMG_8169.jpg" class="gallery-photo" onclick="openPhoto(this.src)">
+      <img src="https://i.postimg.cc/ZnqbxnYN/IMG_8176.jpg" class="gallery-photo" onclick="openPhoto(this.src)">
+      <img src="https://i.postimg.cc/Rh0SLhCQ/IMG_8174.jpg" class="gallery-photo" onclick="openPhoto(this.src)">
+    </div>
+    <div class="photo-viewer" id="photoViewer">
+      <div class="photo-viewer-top">
+        <button class="viewer-close" onclick="closePhoto()">Done</button>
+      </div>
+      <div class="photo-stage" id="photoStage">
+        <img id="viewerImage" class="viewer-image" src="" alt="Photo">
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ WAYNE ENTERPRISES COMMS ══ -->
+  <div class="screen" id="wenterprise" style="flex-direction:column;">
+    <div class="inner-header">
+      <div class="back-btn" onclick="goTo('home')">‹</div>
+      <div>
+        <div class="inner-title">WE Comms</div>
+        <div class="inner-subtitle">Wayne Enterprises · Secure</div>
+      </div>
+    </div>
+    <div class="we-body" style="flex:1;overflow-y:auto;padding:16px;">
+      <div class="we-card">
+        <div class="we-card-top">
+          <div class="we-card-title">Q3 Board Meeting</div>
+          <div class="we-card-time">THU · 10:00</div>
+        </div>
+        <div class="we-divider"></div>
+        <div class="we-card-body">Fox requests final approval on the R&D allocation deck. Lucius flagged three line items for discussion — all related to the new applied sciences division. Your attendance is required in person.</div>
+        <div class="we-tag info">Fox · Pending Review</div>
+      </div>
+      <div class="we-card">
+        <div class="we-card-top">
+          <div class="we-card-title">Metropolis Acquisition</div>
+          <div class="we-card-time">APR 5</div>
+        </div>
+        <div class="we-divider"></div>
+        <div class="we-card-body">Letter of intent filed re: MediaGroup acquisition in Metropolis. Legal advises this would give WE controlling interest in the Daily Planet's parent company within 18 months pending regulatory review.</div>
+        <div class="we-tag conf">Confidential</div>
+      </div>
+      <div class="we-card">
+        <div class="we-card-top">
+          <div class="we-card-title">Applied Sciences — Req. #114</div>
+          <div class="we-card-time">MAR 28</div>
+        </div>
+        <div class="we-divider"></div>
+        <div class="we-card-body">New materials specification for containment housing approved. Fabrication lead time: 6 weeks. Lucius has been briefed on intended application scope — no further clarification requested.</div>
+        <div class="we-tag conf">Restricted</div>
+      </div>
+      <div class="we-card">
+        <div class="we-card-top">
+          <div class="we-card-title">WE Security — Weekly Brief</div>
+          <div class="we-card-time">MAR 31</div>
+        </div>
+        <div class="we-divider"></div>
+        <div class="we-card-body">Perimeter checks complete across all five sites. Manor west wing motion sensors recalibrated. No anomalies logged this reporting period.</div>
+        <div class="we-tag info">Routine</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ NOTES ══ -->
+  <div class="screen" id="notes" style="flex-direction:column;">
+    <div class="inner-header">
+      <div class="back-btn" onclick="goTo('home')">‹</div>
+      <div>
+        <div class="inner-title">Notes</div>
+        <div class="inner-subtitle">Encrypted · Private</div>
+      </div>
+    </div>
+    <div class="notes-body" style="flex:1;overflow-y:auto;padding:16px;">
+      <div class="note-item">
+        <div class="note-title">Kent, meeting notes</div>
+        <div class="note-preview">Reads exhausted. Stitched me as the sender soon enough. Kept returning to his pencil. Either a grounding mechanism or just habit, curious either way. Body was ahead of him the whole time. The source defense was too clean. Too fast. Man who’s been losing sleep over a package doesn’t have that answer ready. He’s not going to run the story. Not because he can’t verify the source. He already knows I’m the source. He won’t run it because he doesn’t want to. That’s the part I can’t square yet. He must've been intimidated by someone. </div>
+        <div class="note-date">APR 1, 2026 · 9:17 PM</div>
+      </div>
+      <div class="note-item">
+        <div class="note-title">To do</div>
+        <div class="note-preview">Dry cleaning. Alf left it on my chair. Call barry back. Lucius voicemail x2, urrrghhh. Probably the quarterly thing. Eat, actual food. Figure out whose birthday it is this week, sent flowers last year so someone’s expecting that again. Try get back from tonight’s call early. Eye bags are getting deep even for me. Korean skincare can’t cut this</div>
+        <div class="note-date">APR 1, 2026 · 11:44 AM</div>
+      </div>
+      <div class="note-item">
+        <div class="note-title">ASE — Methodology Review #3</div>
+        <div class="note-preview">Rechecked variables for the third time. The math doesn't change. 1,845 out of 1,847. The two outlier simulations share a single common factor I haven't been able to fully model. Something about the structure of his relationships. Keeps pulling the probability back from the edge.</div>
+        <div class="note-date">MAR 30, 2026 · 2:14 AM</div>
+      </div>
+      <div class="note-item">
+        <div class="note-title">LOIS LANE?</div>
+        <div class="note-preview">Only confirmed associate with consistent access. Every major Supes interview has her byline. Meaning she was either requested specifically or earned it. Worth noting Kent never co-bylines her Supes pieces. Keeps her at arm’s length from the angle he takes with Superman, which is more distant, more objective</div>
+        <div class="note-date">MAR 28, 2026 · 7:31 PM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ INSTAGRAM ══ -->
+  <div class="screen" id="instagram" style="position:relative;">
+
+    <!-- Notification Panel overlay -->
+    <div class="ig-notif-panel" id="igNotifPanel">
+      <div class="ig-notif-panel-header">
+        <div class="back-btn" onclick="closeIgNotifs()">‹</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);">Notifications</div>
+      </div>
+      <div style="flex:1;overflow-y:auto;">
+        <div style="font-size:9px;letter-spacing:2px;color:var(--text-faint);text-transform:uppercase;padding:12px 16px 6px;">This Week</div>
+        <div class="ig-notif-item">
+         <div class="ig-notif-av">
+  <img src="https://i.postimg.cc/mkjGbLgM/IMG_8206.jpg" alt="Alfred">
+</div>
+          <div><div class="ig-notif-text"><strong>alfred.pennyworth</strong> liked your photo.</div><div class="ig-notif-ago">2h ago</div></div>
+        </div>
+        <div class="ig-notif-item">
+         <div class="ig-notif-av">
+  <img src="https://i.postimg.cc/xTgmchxw/IMG_8243.jpg" alt="Clark">
+</div>
+          <div><div class="ig-notif-text"><strong>clarkent</strong> accepted your follow request.</div><div class="ig-notif-ago">5h ago</div></div>
+        </div>
+        <div class="ig-notif-item">
+          <div class="ig-notif-av">
+  <img src="https://i.postimg.cc/pLNm9kW2/IMG_8242.jpg" alt="Barry">
+</div>
+          <div><div class="ig-notif-text"><strong>barry.allen</strong> commented: "bruhhh"</div><div class="ig-notif-ago">Yesterday</div></div>
+        </div>
+        <div class="ig-notif-item">
+         <div class="ig-notif-av">
+  <img src="https://i.postimg.cc/5ygMx42Y/IMG_8219.jpg" alt="Alfred">
+</div>
+          <div><div class="ig-notif-text"><strong>luciusfox_we</strong> liked your photo.</div><div class="ig-notif-ago">2d ago</div></div>
+        </div>
+        <div class="ig-notif-item">
+         <div class="ig-notif-av">
+  <img src="https://i.postimg.cc/zGmyLpzq/IMG_8241.jpg" alt="Alfred">
+</div>
+          <div><div class="ig-notif-text"><strong>diana.themyscira</strong> sent you a follow request.</div><div class="ig-notif-ago">3d ago</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Story Viewer overlay -->
+    <div class="ig-story-viewer" id="igStoryViewer">
+      <div class="story-progress-bar" id="storyProgressBar"></div>
+      <div class="story-top-bar">
+        <div class="story-avatar-sm" id="storyAvatarSm">A</div>
+        <div>
+          <div class="story-username" id="storyUsername">alfred.pennyworth</div>
+          <div class="story-time-lbl" id="storyTimeLbl">2h ago</div>
+        </div>
+        <button class="story-close" onclick="closeStory()">✕</button>
+      </div>
+      <img class="story-img" id="storyImg" src="" alt="">
+      <div class="story-tap-left" onclick="prevStory()"></div>
+      <div class="story-tap-right" onclick="nextStory()"></div>
+    </div>
+
+    <!-- Top bar with logo + icons -->
+    <div class="ig-top-bar">
+      <div class="ig-top-logo">Instagram</div>
+      <div class="ig-top-actions">
+        <div class="ig-top-btn" onclick="openIgNotifs()">
+          <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+          <div class="ig-notif-dot"></div>
+        </div>
+        <div class="ig-top-btn">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="social-body">
+      <div class="ig-stories">
+        <div class="ig-story" onclick="openStory(0)">
+         <div class="ig-story-ring">
+  <div class="ig-story-avatar">
+    <img src="https://i.postimg.cc/m2KmPx1w/IMG_8141.jpg" alt="Your Story">
+  </div>
+</div>
+          <div class="ig-story-name">Your Story</div>
+        </div>
+        <div class="ig-story" onclick="openStory(1)">
+          <div class="ig-story-ring">
+  <div class="ig-story-avatar">
+    <img src="https://i.postimg.cc/pLNm9kW2/IMG_8242.jpg" alt="Alfred">
+  </div>
+</div>
+          <div class="ig-story-name">Barry</div>
+        </div>
+        <div class="ig-story" onclick="openStory(2)">
+         <div class="ig-story-ring">
+  <div class="ig-story-avatar">
+    <img src="https://i.postimg.cc/zGmyLpzq/IMG_8241.jpg" alt="Diana">
+  </div>
+</div>
+          <div class="ig-story-name">Diana</div>
+        </div>
+        <div class="ig-story" onclick="openStory(3)">
+         <div class="ig-story-ring seen">
+  <div class="ig-story-avatar">
+    <img src="https://i.postimg.cc/5ygMx42Y/IMG_8219.jpg" alt="Lucius">
+  </div>
+</div>
+          <div class="ig-story-name">Lucius</div>
+        </div>
+        <div class="ig-story" onclick="openStory(4)">
+          <div class="ig-story-ring seen">
+  <div class="ig-story-avatar">
+    <img src="https://i.postimg.cc/mkjGbLgM/IMG_8206.jpg" alt="Alfred">
+  </div>
+</div>
+          <div class="ig-story-name">Alfred</div>
+        </div>
+      </div>
+
+      <div class="ig-post">
+        <div class="ig-post-header">
+         <div class="ig-post-avatar">
+  <img src="https://i.postimg.cc/pLNm9kW2/IMG_8242.jpg" alt="Barry">
+</div>
+          <div>
+            <div class="ig-post-user">barry.allen</div>
+            <div class="ig-post-location">Gotham</div>
+          </div>
+        </div>
+        <img src="https://i.postimg.cc/d1XT06k3/IMG_8220.jpg" class="ig-post-img" alt="">
+        <div class="ig-post-actions"><span>🤍</span><span>💬</span><span>↗</span></div>
+        <div class="ig-post-likes">2,847 likes</div>
+        <div class="ig-post-caption"><strong>barry.allen</strong> the city goes hard when the weather is nice justtt saying 🚶.</div>
+        <div class="ig-post-time">3 hours ago</div>
+      </div>
+
+      <div class="ig-post">
+        <div class="ig-post-header">
+         <div class="ig-post-avatar">
+  <img src="https://i.postimg.cc/zGmyLpzq/IMG_8241.jpg" alt="Diana">
+</div>
+          <div>
+            <div class="ig-post-user">diana.themyscira</div>
+            <div class="ig-post-location">Metropolis</div>
+          </div>
+        </div>
+        <img src="https://i.postimg.cc/1tTNzBn8/IMG_8213.jpg" class="ig-post-img" alt="">
+        <div class="ig-post-actions"><span>❤️</span><span>💬</span><span>↗</span></div>
+        <div class="ig-post-likes">14,201 likes</div>
+        <div class="ig-post-caption"><strong>diana.themyscira</strong> City running.</div>
+        <div class="ig-post-time">Yesterday</div>
+      </div>
+    </div>
+
+    <div class="ig-bottom-nav">
+      <div class="ig-nav-btn active">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      </div>
+      <div class="ig-nav-btn">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      </div>
+      <div class="ig-nav-btn">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+      </div>
+      <div class="ig-nav-btn">
+        <svg viewBox="0 0 24 24"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
+      </div>
+      <div class="ig-nav-btn" onclick="goTo('ig-profile')">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ X (TWITTER) ══ -->
+  <div class="screen" id="twitter" style="flex-direction:column;">
+    <div class="inner-header">
+      <div class="back-btn" onclick="goTo('home')">‹</div>
+      <div>
+        <div class="inner-title">X</div>
+        <div class="inner-subtitle">@BruceWayne · For you</div>
+      </div>
+    </div>
+    <div class="social-body">
+
+      <div class="x-post">
+       <div class="x-avatar">
+  <img src="https://i.postimg.cc/nLW4PBKd/Screenshot_2026_04_02_233649.png" alt="Bruce">
+</div>
+        <div class="x-post-content">
+          <div class="x-post-header">
+            <span class="x-post-name">Bruce Wayne</span>
+            <span class="x-post-handle">@BruceWayne</span>
+            <span class="x-post-time">2h</span>
+          </div>
+          <div class="x-post-text">We must overthrow the culture of corruption that silences women.</div>
+          <div class="x-post-actions">
+            <span class="x-action">💬 14</span>
+            <span class="x-action">♻️ 102</span>
+            <span class="x-action">🤍 2.1k</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="x-post">
+        <div class="x-avatar">
+  <img src="https://i.postimg.cc/Y9VmSRG4/IMG_8214.jpg" alt="Barry">
+</div>
+        <div class="x-post-content">
+          <div class="x-post-header">
+            <span class="x-post-name">barry</span>
+            <span class="x-post-handle">@thebarryallen</span>
+            <span class="x-post-time">5h</span>
+          </div>
+          <div class="x-post-text">genuinely cannot believe how fast the city rebuilt after the last incident. gotham is something elseee. shoutout to the guy in the cape (you know who you are)</div>
+          <div class="x-post-actions">
+            <span class="x-action">💬 88</span>
+            <span class="x-action">♻️ 1.4k</span>
+            <span class="x-action">🤍 9.7k</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="x-post">
+       <div class="x-avatar">
+  <img src="https://i.postimg.cc/NMVr0D90/IMG_8226.jpg" alt="Clark">
+</div>
+        <div class="x-post-content">
+          <div class="x-post-header">
+            <span class="x-post-name">Clark</span>
+            <span class="x-post-handle">@justaregularkent</span>
+            <span class="x-post-time">8h</span>
+          </div>
+          <div class="x-post-text">Tbh, I would participate in Jigsaw's games because I know it takes a long time to think about them and set them up.</div>
+          <div class="x-post-actions">
+            <span class="x-action">💬 2</span>
+            <span class="x-action">♻️ 4</span>
+            <span class="x-action">🤍 8</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="x-post">
+         <div class="x-avatar">
+  <img src="https://i.postimg.cc/VsCR2GV0/IMG_8228.jpg" alt="Lois">
+</div>
+        <div class="x-post-content">
+          <div class="x-post-header">
+            <span class="x-post-name">Lois Lane</span>
+            <span class="x-post-handle">@loislane.2</span>
+            <span class="x-post-time">12h</span>
+          </div>
+          <div class="x-post-text">Spent the last 2 weeks investigating Metropolis' housing contracts - my full piece, with a section from Clark, drops tomorrow.</div>
+          <div class="x-post-actions">
+            <span class="x-action">💬 41</span>
+            <span class="x-action">♻️ 803</span>
+            <span class="x-action">🤍 8k</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="x-post">
+       <div class="x-avatar">
+  <img src="https://i.postimg.cc/Yqx1wJfW/e84a25a63beb4abe814b8d3ddc28632f.jpg" alt="Lois">
+</div>
+        <div class="x-post-content">
+          <div class="x-post-header">
+            <span class="x-post-name">spiderman irl</span>
+            <span class="x-post-handle">@butchstag_stagthatsabutch</span>
+            <span class="x-post-time">1d</span>
+          </div>
+          <div class="x-post-text">Butch as in. Butch as in tough, not angry. Butch as in the kind of strength that learned early how to carry things quietly. The shopping bags. The silence in a r</div>
+          <div class="x-post-actions">
+            <span class="x-action">💬 31</span>
+            <span class="x-action">♻️ 208</span>
+            <span class="x-action">🤍 1.1k</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ INSTAGRAM PROFILE ══ -->
+  <div class="screen" id="ig-profile" style="flex-direction:column;">
+    <div class="inner-header">
+      <div class="back-btn" onclick="goTo('instagram')">‹</div>
+      <div>
+        <div class="inner-title" style="font-family:'DM Mono',monospace;font-size:14px;letter-spacing:0.5px;">disdagothamgrimreaper</div>
+        <div class="inner-subtitle">Profile</div>
+      </div>
+    </div>
+    <div class="ig-profile-body">
+      <div class="ig-profile-header">
+        <div class="ig-profile-top">
+          <div class="ig-profile-avatar-wrap">
+           <div class="ig-profile-avatar">
+  <img src="https://i.postimg.cc/m2KmPx1w/IMG_8141.jpg" alt="Bruce Wayne">
+</div>
+          </div>
+          <div class="ig-profile-stats">
+            <div class="ig-profile-stat">
+              <div class="ig-profile-stat-num">7</div>
+              <div class="ig-profile-stat-label">Posts</div>
+            </div>
+            <div class="ig-profile-stat">
+              <div class="ig-profile-stat-num">129</div>
+              <div class="ig-profile-stat-label">Followers</div>
+            </div>
+            <div class="ig-profile-stat">
+              <div class="ig-profile-stat-num">322</div>
+              <div class="ig-profile-stat-label">Following</div>
+            </div>
+          </div>
+        </div>
+        <div class="ig-profile-name">Bruce Wayne</div>
+        <div class="ig-profile-handle">@disdagothamgrimreaper</div>
+        <div class="ig-profile-bio">Can't do nights</div>
+        <div class="ig-profile-btn-row">
+          <div class="ig-profile-btn">Edit Profile</div>
+          <div class="ig-profile-btn">Share Profile</div>
+        </div>
+      </div>
+      <div class="ig-profile-grid">
+        <img src="https://i.postimg.cc/7h8RJfLQ/IMG_8159.jpg" class="ig-profile-thumb" alt="">
+        <img src="https://i.postimg.cc/sxdLGv2b/IMG_8164.jpg" class="ig-profile-thumb" alt="">
+        <img src="https://i.postimg.cc/0jH8Wvbg/IMG_8144.jpg" class="ig-profile-thumb" alt="">
+        <img src="https://i.postimg.cc/xT9xrrNW/IMG_8244.jpg" class="ig-profile-thumb" alt="">
+        <img src="https://i.postimg.cc/wMb6fz3h/IMG_8165.jpg" class="ig-profile-thumb" alt="">
+        <img src="https://i.postimg.cc/rsY8nTzx/IMG_8166.jpg" class="ig-profile-thumb" alt="">
+        <img src="https://i.postimg.cc/Wzf2WVtq/IMG_8169.jpg" class="ig-profile-thumb" alt="">
+      </div>
+    </div>
+
+    <!-- Bottom nav -->
+    <div class="ig-bottom-nav">
+      <div class="ig-nav-btn" onclick="goTo('instagram')">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      </div>
+      <div class="ig-nav-btn">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      </div>
+      <div class="ig-nav-btn">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+      </div>
+      <div class="ig-nav-btn">
+        <svg viewBox="0 0 24 24"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
+      </div>
+      <div class="ig-nav-btn active">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TIKTOK ══ -->
+  <div class="screen" id="tiktok" style="flex-direction:column;background:#000;">
+    <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;background:#000;">
+      <div class="back-btn" onclick="goTo('home')" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.1);color:#fff;">‹</div>
+      <div style="display:flex;gap:20px;align-items:center;">
+        <span style="font-size:13px;color:rgba(255,255,255,0.5);letter-spacing:0.5px;">Following</span>
+        <span style="font-size:14px;color:#fff;font-weight:700;border-bottom:2px solid #fff;padding-bottom:2px;letter-spacing:0.3px;">For You</span>
+      </div>
+      <div style="width:32px;"></div>
+    </div>
+
+    <div class="tiktok-feed">
+      <!-- Video 1 -->
+      <div class="tt-video-card">
+        <div class="tt-bg" style="background-image:url('https://i.postimg.cc/VvC00tn9/IMG_8225.gif');"></div>
+        <div class="tt-overlay">
+          <div class="tt-right-actions">
+            <div>
+              <div class="tt-avatar-ring"><div class="tt-avatar-inner">B</div></div>
+            </div>
+            <div class="tt-action">
+              <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span class="tt-action-count">48.2K</span>
+            </div>
+            <div class="tt-action">
+              <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+              <span class="tt-action-count">1,203</span>
+            </div>
+            <div class="tt-action">
+              <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+              <span class="tt-action-count">Share</span>
+            </div>
+          </div>
+          <div>
+            <div class="tt-user">@hungwoo</div>
+            <div class="tt-caption">cs what is he rly gonna do about it😂🤭 write a daily planet article on me ? #fyp </div>
+            <div class="tt-sound">♫ ·  White Cat — Yves</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tt-bottom-nav">
+      <div class="tt-nav-item active">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="tt-nav-item">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <span>Discover</span>
+      </div>
+      <div class="tt-nav-item">
+        <div class="tt-add-btn">
+          <div class="tt-add-bg cyan"></div>
+          <div class="tt-add-bg red"></div>
+          <div class="tt-add-bg"></div>
+          <span class="tt-add-plus">+</span>
+        </div>
+      </div>
+      <div class="tt-nav-item">
+        <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        <span>Inbox</span>
+      </div>
+      <div class="tt-nav-item">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        <span>Profile</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end phone -->
+
+<script>
+console.log("script loaded");
+  // ── Chat data ──
+  const CHATS = {
+    alfred: {
+      name: 'Alfred',
+      status: 'Active now',
+      messages: [
+        { from: 'recv', text: 'Good morning, sir. Your 8pm reservation at The Meridian has been confirmed.', time: '8:58' },
+        { from: 'recv', text: "I've pressed the grey suit — anticipating you'll want it this evening rather than the navy. Do correct me if I'm mistaken.", time: '8:59' },
+        { from: 'sent', text: 'The grey is fine.', time: '9:00' },
+        { from: 'recv', text: 'Very good. May I also enquire how yesterday\'s meeting went. You returned later than expected and didn\'t touch your dinner.', time: '9:02' },
+        { from: 'sent', text: 'It was.. informative.', time: '9:03' },
+        { from: 'recv', text: 'That is precisely the kind of answer that concerns me, sir.', time: '9:04' },
+      ]
+    },
+    diana: {
+      name: 'Diana',
+      status: 'Last seen 8:50',
+      messages: [
+        { from: 'recv', text: 'You went to the Daily Planet in person. Bruce.', time: '8:44' },
+        { from: 'sent', text: 'The package was ignored. I needed to understand why.', time: '8:46' },
+        { from: 'recv', text: 'And you couldn\'t do that from behind a screen because.', time: '8:47' },
+        { from: 'sent', text: 'Because ASE flagged the in-person variable as having better outcome probability. It was a calculated decision.', time: '8:48' },
+  { from: 'recv', text: "That's a very slick way of saying you're curious about that reporter.", time: '8:49' },
+        { from: 'sent', text: "Was curious. Past participle. I was evaluating a risk vector.", time: '8:51' },
+        { from: 'recv', text: 'Mm.', time: '8:51' },
+      ]
+    },
+    lucius: {
+      name: 'Lucius Fox',
+      status: 'Last seen Tue',
+      messages: [
+        { from: 'recv', text: 'Bruce, the Q3 board deck needs your sign-off before Thursday. Three items flagged in the R&D section.', time: 'Tue 4:12' },
+        { from: 'recv', text: 'Also — the applied sciences requisition #114 came through. Lead time is 6 weeks. I haven\'t asked questions, but the materials spec is, well, specific.', time: 'Tue 4:14' },
+        { from: 'sent', text: "I'll review the deck tonight. The spec is correct as submitted.", time: 'Tue 6:30' },
+        { from: 'recv', text: 'Understood. I\'ll see you Thursday.', time: 'Tue 6:34' },
+      ]
+    },
+    barry: {
+      name: 'Barry',
+      status: 'Last seen Mon',
+      messages: [
+        { from: 'recv', text: 'why did i just see tweets about bruce wayne interrogating a daily planet reporter 💀', time: 'Mon 11:02' },
+        { from: 'sent', text: "It isn't an interrogation. It's a precautionary assessment. And he is fine.", time: 'Mon 11:18' },
+        { from: 'recv', text: 'bruce. buddy. what you count as an assessment and what the rest of the world does is very different', time: 'Mon 11:19' },
+        { from: 'recv', text: 'is this about the superman thing?? are you worried about superman???', time: 'Mon 11:19' },
+        { from: 'sent', text: "I'm not worried. I'm getting prepared. There's a difference.", time: 'Mon 11:31' },
+        { from: 'recv', text: "you could just TALK to him you know. like, hi, hello caped-man, i have concerns, can we discuss... i'll find a way for you to be a flailing maiden so he can sweep in", time: 'Mon 11:32' },
+        { from: 'sent', text: "You do that. I'll keep it noted. I have to go.", time: 'Mon 11:45' },
+        { from: 'recv', text: 'you\'re not going to listen to me are you', time: 'Mon 11:46' },
+      ]
+    },
+    we: {
+      name: 'WE Security',
+      status: 'Automated',
+      messages: [
+        { from: 'recv', text: 'Weekly perimeter report — all five sites clear. Manor west wing motion sensors recalibrated to new threshold.', time: 'Mon 6:00' },
+        { from: 'recv', text: 'No anomalies logged this reporting period. Next check scheduled Friday 06:00.', time: 'Mon 6:00' },
+        { from: 'sent', text: 'Acknowledged.', time: 'Mon 9:12' },
+      ]
+    }
+  };
+
+  let currentChat = null;
+
+  function goTo(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+  }
+
+  function openChat(chatId) {
+    currentChat = chatId;
+    const chat = CHATS[chatId];
+    document.getElementById('chatName').textContent = chat.name;
+    document.getElementById('chatStatus').textContent = chat.status;
+    const container = document.getElementById('chatMessages');
+    container.innerHTML = '';
+    chat.messages.forEach(m => {
+      const wrap = document.createElement('div');
+      wrap.className = 'chat-bubble-wrap ' + m.from;
+      wrap.innerHTML = `<div class="chat-bubble">${m.text}</div><div class="chat-time">${m.time}</div>`;
+      container.appendChild(wrap);
+    });
+    goTo('chat');
+    setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
+  }
+
+  function sendMsg() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text || !currentChat) return;
+    const chat = CHATS[currentChat];
+    chat.messages.push({ from: 'sent', text, time: 'Now' });
+    input.value = '';
+    const container = document.getElementById('chatMessages');
+    const wrap = document.createElement('div');
+    wrap.className = 'chat-bubble-wrap sent';
+    wrap.innerHTML = `<div class="chat-bubble">${text}</div><div class="chat-time">Now</div>`;
+    container.appendChild(wrap);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // ── Clock ──
+  function updateClock() {
+    const now = new Date();
+    const h = now.getHours().toString().padStart(2,'0');
+    const m = now.getMinutes().toString().padStart(2,'0');
+    const t = `${h}:${m}`;
+    document.getElementById('clock').textContent = t;
+    document.getElementById('lockClock').textContent = t;
+  }
+  updateClock();
+  setInterval(updateClock, 10000);
+
+  document.getElementById('chatInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendMsg();
+  });
+
+  // ── Gallery ──
+  const galleryPhotos = [
+    "https://i.postimg.cc/3NbKShWX/IMG_8173.jpg",
+    "https://i.postimg.cc/h4CPPLMj/IMG_8143.jpg",
+    "https://i.postimg.cc/0jH8Wvbg/IMG_8144.jpg",
+    "https://i.postimg.cc/HnPpZmjP/IMG_8146.jpg",
+    "https://i.postimg.cc/wMb6fz3h/IMG_8165.jpg",
+    "https://i.postimg.cc/rsY8nTzx/IMG_8166.jpg",
+    "https://i.postimg.cc/Wzf2WVtq/IMG_8169.jpg",
+    "https://i.postimg.cc/ZnqbxnYN/IMG_8176.jpg",
+    "https://i.postimg.cc/Rh0SLhCQ/IMG_8174.jpg"
+  ];
+
+  let currentPhotoIndex = 0;
+  let isZoomed = false;
+  let scale = 1, panX = 0, panY = 0;
+  let startX = 0, startY = 0, dragStartX = 0, dragStartY = 0;
+  let isDragging = false, isPinching = false;
+  let pinchStartDistance = 0, pinchStartScale = 1;
+
+  function getViewerEls() {
+    return {
+      viewer: document.getElementById('photoViewer'),
+      img: document.getElementById('viewerImage'),
+      stage: document.getElementById('photoStage')
+    };
+  }
+
+  function openPhoto(src) {
+    const { viewer, img } = getViewerEls();
+    if (!viewer || !img) return;
+    currentPhotoIndex = galleryPhotos.indexOf(src);
+    if (currentPhotoIndex === -1) currentPhotoIndex = 0;
+    resetZoom();
+    img.style.opacity = '0';
+    img.style.transform = 'scale(0.96)';
+    img.src = src;
+    viewer.classList.add('active');
+    viewer.classList.remove('closing');
+    requestAnimationFrame(() => {
+      img.style.opacity = '1';
+      img.style.transform = 'translate(0px, 0px) scale(1)';
+    });
+  }
+
+  function closePhoto(animated = true) {
+    const { viewer, img } = getViewerEls();
+    if (!viewer || !img) return;
+    if (!animated) { viewer.classList.remove('active', 'closing'); resetZoom(); return; }
+    viewer.classList.add('closing');
+    img.style.opacity = '0';
+    img.style.transform = 'scale(0.96)';
+    setTimeout(() => {
+      viewer.classList.remove('active', 'closing');
+      resetZoom();
+      img.style.opacity = '1';
+      img.style.transform = 'translate(0px, 0px) scale(1)';
+    }, 180);
+  }
+
+  function showPhoto(index, direction = 0) {
+    const { img } = getViewerEls();
+    if (!img) return;
+    if (index < 0) index = galleryPhotos.length - 1;
+    if (index >= galleryPhotos.length) index = 0;
+    currentPhotoIndex = index;
+    img.style.opacity = '0';
+    img.style.transform = `translateX(${direction * 42}px) scale(0.98)`;
+    setTimeout(() => {
+      img.src = galleryPhotos[currentPhotoIndex];
+      resetZoom();
+      img.style.opacity = '1';
+      img.style.transform = 'translate(0px, 0px) scale(1)';
+    }, 120);
+  }
+
+  function resetZoom() {
+    const { img } = getViewerEls();
+    if (!img) return;
+    isZoomed = false; isDragging = false; isPinching = false;
+    scale = 1; panX = 0; panY = 0;
+    img.classList.remove('zoomed');
+    img.style.transition = 'transform 0.22s ease, opacity 0.22s ease';
+    img.style.transform = 'translate(0px, 0px) scale(1)';
+  }
+
+  function applyTransform() {
+    const { img } = getViewerEls();
+    if (!img) return;
+    img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+  }
+
+  function distanceBetweenTouches(t1, t2) {
+    return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+  }
+
+  function clampPan() {
+    const { img, stage } = getViewerEls();
+    if (!img || !stage) return;
+    const maxX = Math.max(0, ((img.clientWidth * scale) - stage.clientWidth) / 2);
+    const maxY = Math.max(0, ((img.clientHeight * scale) - stage.clientHeight) / 2);
+    panX = Math.max(-maxX, Math.min(maxX, panX));
+    panY = Math.max(-maxY, Math.min(maxY, panY));
+  }
+
+  function setupGalleryInteractions() {
+    const { img, stage } = getViewerEls();
+    if (!img || !stage) return;
+
+    img.addEventListener('dblclick', () => {
+      if (isZoomed) { resetZoom(); }
+      else { isZoomed = true; scale = 2; img.classList.add('zoomed'); clampPan(); applyTransform(); }
+    });
+
+    stage.addEventListener('pointerdown', (e) => {
+      startX = e.clientX; startY = e.clientY;
+      dragStartX = e.clientX; dragStartY = e.clientY;
+      if (isZoomed) { isDragging = true; img.style.transition = 'none'; }
+    });
+
+    stage.addEventListener('pointermove', (e) => {
+      if (isZoomed && isDragging && !isPinching) {
+        const dx = e.clientX - dragStartX; const dy = e.clientY - dragStartY;
+        dragStartX = e.clientX; dragStartY = e.clientY;
+        panX += dx; panY += dy; clampPan(); applyTransform(); return;
+      }
+      if (!isZoomed) {
+        const dy = e.clientY - startY;
+        if (Math.abs(dy) > 8) {
+          img.style.transition = 'none';
+          img.style.transform = `translateY(${dy}px) scale(${Math.max(0.9, 1 - Math.abs(dy) / 900)})`;
+          img.style.opacity = `${Math.max(0.35, 1 - Math.abs(dy) / 300)}`;
+        }
+      }
+    });
+
+    function endPointer(e) {
+      const dx = e.clientX - startX; const dy = e.clientY - startY;
+      img.style.transition = 'transform 0.22s ease, opacity 0.22s ease';
+      if (isZoomed) { isDragging = false; clampPan(); applyTransform(); return; }
+      if (Math.abs(dy) > 120 && Math.abs(dy) > Math.abs(dx)) { closePhoto(true); return; }
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        showPhoto(dx < 0 ? currentPhotoIndex + 1 : currentPhotoIndex - 1, dx < 0 ? -1 : 1); return;
+      }
+      img.style.transform = 'translate(0px, 0px) scale(1)';
+      img.style.opacity = '1';
+    }
+
+    stage.addEventListener('pointerup', endPointer);
+    stage.addEventListener('pointercancel', () => {
+      isDragging = false;
+      img.style.transition = 'transform 0.22s ease, opacity 0.22s ease';
+      if (!isZoomed) { img.style.transform = 'translate(0px, 0px) scale(1)'; img.style.opacity = '1'; }
+    });
+
+    stage.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        isPinching = true;
+        pinchStartDistance = distanceBetweenTouches(e.touches[0], e.touches[1]);
+        pinchStartScale = scale;
+        img.style.transition = 'none';
+      }
+    }, { passive: false });
+
+    stage.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault(); isPinching = true;
+        const newDistance = distanceBetweenTouches(e.touches[0], e.touches[1]);
+        scale = Math.max(1, Math.min(4, pinchStartScale * (newDistance / pinchStartDistance)));
+        isZoomed = scale > 1.01;
+        if (isZoomed) img.classList.add('zoomed'); else img.classList.remove('zoomed');
+        clampPan(); applyTransform();
+      }
+    }, { passive: false });
+
+    stage.addEventListener('touchend', () => {
+      if (isPinching) {
+        isPinching = false;
+        img.style.transition = 'transform 0.22s ease, opacity 0.22s ease';
+        if (scale <= 1.01) resetZoom();
+        else { isZoomed = true; clampPan(); applyTransform(); }
+      }
+    });
+  }
+
+  setupGalleryInteractions();
+
+  // ── Instagram Stories ──
+  const STORIES = [
+    { user: 'disdagothamgrimreaper', initial: 'B', time: 'now', imgs: [
+      'https://i.postimg.cc/rms7WBcB/IMG_8250.jpg',
+      'https://i.postimg.cc/yxMq7vMf/IMG_8249.gif'
+    ]},
+    { user: 'barry.allen', initial: 'A', time: '2h ago', imgs: [
+      'https://i.postimg.cc/7ZpNXj3y/IMG_8253.gif',
+      'https://i.postimg.cc/zXQwX4PH/IMG_8255.jpg'
+    ]},
+    { user: 'diana.themyscira', initial: 'D', time: '4h ago', imgs: [
+      'https://i.postimg.cc/vB8xvvNZ/IMG_8256.jpg'
+    ]},
+    { user: 'luciusfox_we', initial: 'L', time: 'Yesterday', imgs: [
+      'https://i.postimg.cc/YSRhjWC2/IMG_8257.jpg'
+    ]},
+    { user: 'alfred.pennyworth', initial: 'B', time: 'Yesterday', imgs: [
+      'https://i.postimg.cc/vmYmRZL9/IMG_8258.jpg',
+      'https://i.postimg.cc/q7J7fvXK/IMG_8260.jpg'
+    ]}
+  ];
+
+  let currentStoryUser = 0;
+  let currentStorySlide = 0;
+  let storyTimer = null;
+  const STORY_DURATION = 4000;
+
+  function openStory(userIdx) {
+    currentStoryUser = userIdx;
+    currentStorySlide = 0;
+    renderStory();
+    document.getElementById('igStoryViewer').classList.add('active');
+    startStoryTimer();
+  }
+
+  function renderStory() {
+    const s = STORIES[currentStoryUser];
+    document.getElementById('storyAvatarSm').textContent = s.initial;
+    document.getElementById('storyUsername').textContent = s.user;
+    document.getElementById('storyTimeLbl').textContent = s.time;
+    document.getElementById('storyImg').src = s.imgs[currentStorySlide];
+
+    // Build progress segments
+    const bar = document.getElementById('storyProgressBar');
+    bar.innerHTML = '';
+    s.imgs.forEach((_, i) => {
+      const seg = document.createElement('div');
+      seg.className = 'story-seg';
+      const fill = document.createElement('div');
+      fill.className = 'story-seg-fill' + (i < currentStorySlide ? ' done' : '');
+      seg.appendChild(fill);
+      bar.appendChild(seg);
+    });
+    // Animate current segment
+    if (storyTimer) clearInterval(storyTimer);
+  }
+
+  function startStoryTimer() {
+    if (storyTimer) clearInterval(storyTimer);
+    const bar = document.getElementById('storyProgressBar');
+    const fills = bar.querySelectorAll('.story-seg-fill');
+    if (!fills[currentStorySlide]) return;
+    const fill = fills[currentStorySlide];
+    fill.style.transition = 'none';
+    fill.style.width = '0%';
+    requestAnimationFrame(() => {
+      fill.style.transition = `width ${STORY_DURATION}ms linear`;
+      fill.style.width = '100%';
+    });
+    storyTimer = setTimeout(() => nextStory(), STORY_DURATION);
+  }
+
+  function nextStory() {
+    if (storyTimer) clearTimeout(storyTimer);
+    const s = STORIES[currentStoryUser];
+    if (currentStorySlide < s.imgs.length - 1) {
+      currentStorySlide++;
+      renderStory();
+      startStoryTimer();
+    } else if (currentStoryUser < STORIES.length - 1) {
+      currentStoryUser++;
+      currentStorySlide = 0;
+      renderStory();
+      startStoryTimer();
+    } else {
+      closeStory();
+    }
+  }
+
+  function prevStory() {
+    if (storyTimer) clearTimeout(storyTimer);
+    if (currentStorySlide > 0) {
+      currentStorySlide--;
+    } else if (currentStoryUser > 0) {
+      currentStoryUser--;
+      currentStorySlide = 0;
+    }
+    renderStory();
+    startStoryTimer();
+  }
+
+  function closeStory() {
+    if (storyTimer) clearTimeout(storyTimer);
+    document.getElementById('igStoryViewer').classList.remove('active');
+  }
+
+  // ── Instagram Notifications ──
+  function openIgNotifs() {
+    document.getElementById('igNotifPanel').classList.add('active');
+  }
+  function closeIgNotifs() {
+    document.getElementById('igNotifPanel').classList.remove('active');
+  }
+</script>
+</body>
+</html>
