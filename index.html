@@ -6,7 +6,45 @@
 <title>BW — Personal Device</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Discord iOS Activity iframe touch/click fixes ── */
+/* 1. Remove 300ms tap delay and enable clicks on the root + phone shell */
+html, body, .phone {
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 2. Every element that carries an onclick or acts as a button must have
+      cursor:pointer (iOS Safari inside an iframe only fires click on
+      elements it considers "tappable" — cursor:pointer opts them in) */
+.app-item,
+.back-btn,
+.msg-thread,
+.we-card,
+.note-item,
+.ig-story,
+.ig-nav-btn,
+.ig-top-btn,
+.story-tap-left,
+.story-tap-right,
+.story-close,
+.gallery-photo,
+.viewer-close,
+.chat-send,
+.home-dock .app-item,
+[onclick] {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 3. Suppress all tap highlights site-wide */
+* {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
 
   :root {
     --bg: #0a0a0c;
@@ -1431,7 +1469,7 @@
 }
 </style>
 </head>
-<body>
+<body ontouchstart="">
 
 <div class="phone">
 
@@ -2298,7 +2336,133 @@
 </div><!-- end phone -->
 
 <script>
+const DISCORD_CLIENT_ID = "1489475363196244028";
+let discordSdk = null;
+
+async function initDiscordSdk() {
+  try {
+    const { DiscordSDK } = await import("https://esm.sh/@discord/embedded-app-sdk");
+    discordSdk = new DiscordSDK(DISCORD_CLIENT_ID);
+    await discordSdk.ready();
+await discordSdk.commands.setOrientationLockState({
+  lock_state: "unlocked",
+  picture_in_picture_lock_state: "unlocked"
+});
+
+    const { code } = await discordSdk.commands.authorize({
+      client_id: DISCORD_CLIENT_ID,
+      response_type: "code",
+      state: "",
+      prompt: "none",
+      scope: ["identify"],
+    });
+
+    console.log("Discord SDK authorized, code:", code);
+  } catch (err) {
+    console.log("SDK error (or not in Discord):", err.message);
+  }
+}
+
+initDiscordSdk();
 console.log("script loaded");
+
+/* ── Discord iOS Activity iframe: touch/click fixes v2 ─────────────────
+
+   WHY THIS IS NEEDED:
+   1. iOS Safari in a cross-origin iframe does not fire 'click' on plain
+      divs unless they have a native touch handler.
+   2. Discord's WKWebView on iOS may suppress interaction until it receives
+      the HANDSHAKE postMessage from the Activity page. If the npm SDK
+      import (esm.sh) is blocked by Discord's CSP, that message is never
+      sent, keeping the WKWebView non-interactive.
+   3. el.click() can be swallowed in sandboxed WKWebViews; calling the
+      onclick function directly is more reliable.
+
+   FIXES APPLIED:
+   A. Inline Discord handshake — sent immediately on script exec, no npm
+      import required. Ensures Discord's native layer enables touch.
+   B. Empty document touchstart — marks page as touch-aware to iOS WebKit.
+   C. Per-element direct touchstart + touchend — attaches to every [onclick]
+      element and calls the handler function directly (bypasses el.click()).
+   D. Pointer-event fallback — pointerdown listener as a tertiary path.
+──────────────────────────────────────────────────────────────────────── */
+
+// ── A: Inline Discord handshake (no SDK import needed) ──
+(function() {
+  try {
+    var params = new URLSearchParams(location.search);
+    var frameId = params.get('frame_id') || '';
+    var nonce = Date.now().toString(36) + Math.random().toString(36).slice(2);
+    var msg = { v: 1, cmd: 'HANDSHAKE', args: { v: 1, client_id: DISCORD_CLIENT_ID, frame_id: frameId }, nonce: nonce };
+    // Try Discord's origin first, then wildcard as fallback
+    try { window.parent.postMessage(msg, 'https://discord.com'); } catch(e) {}
+    try { window.parent.postMessage(msg, '*'); } catch(e) {}
+    console.log('[Discord] Inline handshake sent');
+  } catch(e) { console.log('[Discord] Handshake error:', e.message); }
+})();
+
+// ── B: Document-level touchstart — makes the whole page touch-aware ──
+document.addEventListener('touchstart', function() {}, { passive: true });
+
+// ── C & D: Per-element touch + pointer handlers ──
+(function() {
+  // Directly invokes the onclick logic for an element —
+  // more reliable than el.click() in sandboxed WKWebViews.
+  function fireOnclick(el, e) {
+    try {
+      if (typeof el.onclick === 'function') {
+        el.onclick.call(el, e);
+      } else {
+        var attr = el.getAttribute('onclick');
+        if (attr) (new Function(attr)).call(el);
+      }
+    } catch (ex) { console.log('[touch] onclick error:', ex.message); }
+  }
+
+  // Attach touch + pointer listeners to one element
+  function bindTouchable(el) {
+    if (el._discordTouchBound) return;
+    el._discordTouchBound = true;
+
+    var startX = 0, startY = 0, moved = false;
+
+    el.addEventListener('touchstart', function(e) {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      moved = false;
+    }, { passive: true });
+
+    el.addEventListener('touchmove', function(e) {
+      if (Math.abs(e.touches[0].clientX - startX) > 8 ||
+          Math.abs(e.touches[0].clientY - startY) > 8) {
+        moved = true;
+      }
+    }, { passive: true });
+
+    el.addEventListener('touchend', function(e) {
+      if (moved) return;
+      e.preventDefault(); // stop synthesised click double-fire
+      fireOnclick(el, e);
+    }, { passive: false });
+
+    // Pointer event fallback (covers Apple Pencil and some WKWebView configs)
+    el.addEventListener('pointerup', function(e) {
+      if (e.pointerType === 'touch') fireOnclick(el, e);
+    }, { passive: true });
+  }
+
+  // Bind all static [onclick] elements immediately
+  function bindAll() {
+    document.querySelectorAll('[onclick]').forEach(bindTouchable);
+  }
+  bindAll();
+
+  // Re-run after any dynamic content changes (e.g. openChat renders messages)
+  if (window.MutationObserver) {
+    new MutationObserver(function() { bindAll(); })
+      .observe(document.body, { childList: true, subtree: true });
+  }
+})();
   // ── Chat data ──
   const CHATS = {
     alfred: {
@@ -2364,8 +2528,10 @@ console.log("script loaded");
   let currentChat = null;
 
   function goTo(screenId) {
+    var target = document.getElementById(screenId);
+    if (!target) { console.warn('[goTo] No screen found for id:', screenId); return; }
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(screenId).classList.add('active');
+    target.classList.add('active');
   }
 
   function openChat(chatId) {
