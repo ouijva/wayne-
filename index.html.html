@@ -1467,6 +1467,84 @@ html, body, .phone {
   font-style: normal;
   letter-spacing: -0.2px;
 }
+
+/* ── IG DM list ── */
+#ig-dms { flex-direction: column; }
+.ig-dm-list { flex: 1; overflow-y: auto; }
+.ig-dm-list::-webkit-scrollbar { display: none; }
+.ig-dm-thread {
+  padding: 12px 16px; display: flex; align-items: center;
+  gap: 12px; cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+.ig-dm-thread:active { background: rgba(255,255,255,0.04); }
+.ig-dm-av { width: 52px; height: 52px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--surface2); }
+.ig-dm-av img { width: 100%; height: 100%; object-fit: cover; }
+.ig-dm-info { flex: 1; min-width: 0; }
+.ig-dm-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.ig-dm-preview { font-size: 13px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ig-dm-time { font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+.ig-dm-unread { width: 10px; height: 10px; border-radius: 50%; background: var(--blue); flex-shrink: 0; }
+
+/* ── IG DM Chat ── */
+#ig-dm-chat { flex-direction: column; }
+.ig-dm-chat-header {
+  padding: 8px 16px 10px;
+  display: flex; flex-direction: column;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0; position: relative;
+}
+.ig-dm-back {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  display: flex; align-items: center;
+  color: var(--blue); font-size: 16px; font-weight: 400; cursor: pointer;
+}
+.ig-dm-back::before { content: '‹'; font-size: 26px; font-weight: 300; line-height: 1; }
+.ig-dm-header-av { width: 38px; height: 38px; border-radius: 50%; overflow: hidden; background: var(--surface2); margin-bottom: 2px; }
+.ig-dm-header-av img { width: 100%; height: 100%; object-fit: cover; }
+.ig-dm-header-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.ig-dm-header-handle { font-size: 11px; color: var(--text-dim); }
+.ig-dm-messages { flex: 1; overflow-y: auto; padding: 10px 12px 6px; display: flex; flex-direction: column; gap: 4px; }
+.ig-dm-messages::-webkit-scrollbar { display: none; }
+.ig-dm-bubble-wrap { display: flex; flex-direction: column; max-width: 75%; margin-bottom: 2px; }
+.ig-dm-bubble-wrap.sent { align-self: flex-end; align-items: flex-end; }
+.ig-dm-bubble-wrap.recv { align-self: flex-start; align-items: flex-start; }
+.ig-dm-bubble {
+  padding: 9px 14px; border-radius: 20px;
+  font-size: 15px; line-height: 1.4;
+}
+.ig-dm-bubble-wrap.sent .ig-dm-bubble { background: var(--blue); color: #fff; border-bottom-right-radius: 5px; }
+.ig-dm-bubble-wrap.recv .ig-dm-bubble { background: #e5e5ea; color: #1c1c1e; border-bottom-left-radius: 5px; }
+.ig-dm-time { font-size: 10px; color: var(--text-faint); margin-top: 3px; padding: 0 4px; }
+.ig-dm-input-bar {
+  padding: 8px 12px 18px; display: flex;
+  gap: 8px; align-items: center;
+  border-top: 1px solid var(--border); flex-shrink: 0;
+}
+.ig-dm-input-wrap {
+  flex: 1; background: transparent;
+  border: 1.5px solid rgba(0,0,0,0.15);
+  border-radius: 22px; padding: 8px 14px;
+  display: flex; align-items: center;
+}
+.ig-dm-input {
+  flex: 1; background: transparent; border: none;
+  font-size: 15px; color: var(--text); outline: none; font-family: inherit;
+}
+.ig-dm-input::placeholder { color: #c7c7cc; }
+.ig-dm-send {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--blue); border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 15px; color: #fff; flex-shrink: 0;
+}
+.ig-dm-backend-status {
+  text-align: center; font-size: 11px;
+  color: var(--text-dim); padding: 6px 16px;
+  font-style: italic; flex-shrink: 0;
+}
 </style>
 </head>
 <body ontouchstart="">
@@ -1979,7 +2057,7 @@ html, body, .phone {
           <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
           <div class="ig-notif-dot"></div>
         </div>
-        <div class="ig-top-btn">
+        <div class="ig-top-btn" onclick="goTo('ig-dms')">
           <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </div>
       </div>
@@ -2260,6 +2338,55 @@ html, body, .phone {
       <div class="ig-nav-btn active">
         <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
       </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       INSTAGRAM — DM LIST
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="ig-dms" style="flex-direction:column;">
+    <div class="inner-header">
+      <div class="back-btn" onclick="goTo('instagram')" style="color:var(--blue);">Back</div>
+      <span class="inner-title">Messages</span>
+      <div class="inner-header-right" style="position:absolute;right:16px;">✏️</div>
+    </div>
+    <div style="padding:10px 16px 6px;flex-shrink:0;">
+      <div class="msg-search" style="margin:0;">🔍 <span>Search</span></div>
+    </div>
+    <div class="ig-dm-list">
+      <div class="ig-dm-thread" onclick="openIgDmChat()">
+        <div class="ig-dm-av"><img src="images/IMG_8243.jpg" alt="Clark"></div>
+        <div class="ig-dm-info">
+          <div class="ig-dm-name">clarkent</div>
+          <div class="ig-dm-preview" id="clarkLastMsg">Clark.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+          <div class="ig-dm-time">Mon</div>
+          <div class="ig-dm-unread" id="clarkUnreadDot" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       INSTAGRAM — DM CHAT WITH CLARK (backend)
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="ig-dm-chat" style="flex-direction:column;">
+    <div class="ig-dm-chat-header">
+      <div class="ig-dm-back" onclick="goTo('ig-dms')">Back</div>
+      <div class="ig-dm-header-av"><img src="images/IMG_8243.jpg" alt="Clark"></div>
+      <div class="ig-dm-header-name">clarkent</div>
+      <div class="ig-dm-header-handle">Clark Kent · @clarkent</div>
+    </div>
+    <div class="ig-dm-backend-status" id="igDmStatus">
+      <span class="pulse">●</span> <span id="igDmStatusText">Connecting…</span>
+    </div>
+    <div class="ig-dm-messages" id="igDmMessages"></div>
+    <div class="ig-dm-input-bar">
+      <div class="ig-dm-input-wrap">
+        <input class="ig-dm-input" placeholder="Message…" id="igDmInput">
+      </div>
+      <button class="ig-dm-send" onclick="sendIgDm()">↑</button>
     </div>
   </div>
 
@@ -2882,6 +3009,125 @@ document.addEventListener('touchstart', function() {}, { passive: true });
   function closeIgNotifs() {
     document.getElementById('igNotifPanel').classList.remove('active');
   }
+
+/* ══════════════════════════════════════════
+   INSTAGRAM — DM BACKEND (Bruce's phone)
+══════════════════════════════════════════ */
+const BACKEND_URL  = 'https://phones-backend-9rqg.onrender.com';
+const IG_DM_ROOM   = 'clark-bruce-instagram';
+const MY_IG_ID     = 'bruce';
+
+let igDmMessages = [
+  { id: 'seed-1', from: MY_IG_ID, text: 'Clark.', timestamp: '2026-04-01T11:00:00Z' },
+];
+
+let igDmPollingInterval = null;
+let igDmOpen = false;
+
+function openIgDmChat() {
+  igDmOpen = true;
+  renderIgDmMessages();
+  goTo('ig-dm-chat');
+  setTimeout(() => {
+    const c = document.getElementById('igDmMessages');
+    c.scrollTop = c.scrollHeight;
+  }, 50);
+  updateIgDmStatus();
+  if (BACKEND_URL) startIgDmPolling();
+  const dot = document.getElementById('clarkUnreadDot');
+  if (dot) dot.style.display = 'none';
+}
+
+function renderIgDmMessages() {
+  const container = document.getElementById('igDmMessages');
+  container.innerHTML = '';
+  igDmMessages.forEach(m => {
+    const side = (m.from === MY_IG_ID) ? 'sent' : 'recv';
+    const wrap = document.createElement('div');
+    wrap.className = 'ig-dm-bubble-wrap ' + side;
+    const ts = m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Now';
+    wrap.innerHTML = `<div class="ig-dm-bubble">${m.text}</div><div class="ig-dm-time">${ts}</div>`;
+    container.appendChild(wrap);
+  });
+  const last = igDmMessages[igDmMessages.length - 1];
+  if (last) {
+    const el = document.getElementById('clarkLastMsg');
+    if (el) el.textContent = (last.from === MY_IG_ID ? 'You: ' : '') + last.text;
+  }
+}
+
+function updateIgDmStatus() {
+  const statusEl = document.getElementById('igDmStatusText');
+  const dot      = document.querySelector('#igDmStatus .pulse');
+  if (!BACKEND_URL) {
+    if (statusEl) statusEl.textContent = 'Set BACKEND_URL to enable live messaging';
+    if (dot) dot.style.color = 'var(--text-dim)';
+  } else {
+    if (statusEl) statusEl.textContent = 'Live · Messages sync every 3s';
+    if (dot) dot.style.color = 'var(--green)';
+  }
+}
+
+async function startIgDmPolling() {
+  stopIgDmPolling();
+  igDmPollingInterval = setInterval(async () => {
+    if (!igDmOpen || !BACKEND_URL) return;
+    try {
+      const res  = await fetch(`${BACKEND_URL}/messages?room=${IG_DM_ROOM}`);
+      const data = await res.json();
+      if (data.messages && Array.isArray(data.messages)) {
+        const existingIds = new Set(igDmMessages.map(m => m.id));
+        const newMsgs     = data.messages.filter(m => !existingIds.has(m.id));
+        if (newMsgs.length > 0) {
+          igDmMessages = [...igDmMessages, ...newMsgs];
+          renderIgDmMessages();
+          const c = document.getElementById('igDmMessages');
+          if (c) c.scrollTop = c.scrollHeight;
+          const dot = document.getElementById('clarkUnreadDot');
+          if (dot) dot.style.display = 'block';
+        }
+      }
+    } catch(e) { /* backend unreachable — silent fail */ }
+  }, 3000);
+}
+
+function stopIgDmPolling() {
+  if (igDmPollingInterval) clearInterval(igDmPollingInterval);
+  igDmPollingInterval = null;
+}
+
+async function sendIgDm() {
+  const input = document.getElementById('igDmInput');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  const msg = {
+    id:        Date.now().toString(36) + Math.random().toString(36).slice(2),
+    from:      MY_IG_ID,
+    text,
+    timestamp: new Date().toISOString()
+  };
+  igDmMessages.push(msg);
+  renderIgDmMessages();
+  const c = document.getElementById('igDmMessages');
+  if (c) c.scrollTop = c.scrollHeight;
+
+  if (BACKEND_URL) {
+    try {
+      await fetch(`${BACKEND_URL}/send`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ room: IG_DM_ROOM, ...msg })
+      });
+    } catch(e) { /* silent */ }
+  }
+}
+
+document.getElementById('igDmInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendIgDm();
+});
+
+console.log('Bruce Wayne phone (v2) loaded ✓');
 </script>
 </body>
 </html>
