@@ -2468,7 +2468,8 @@ let discordSdk = null;
 
 async function initDiscordSdk() {
   try {
-    const { DiscordSDK } = await import("https://esm.sh/@discord/embedded-app-sdk");
+    const { DiscordSDK, patchUrlMappings } = await import("https://esm.sh/@discord/embedded-app-sdk");
+    patchUrlMappings([{ prefix: '/backend', target: 'phones-backend-9rqg.onrender.com' }]);
     discordSdk = new DiscordSDK(DISCORD_CLIENT_ID);
     await discordSdk.ready();
 await discordSdk.commands.setOrientationLockState({
@@ -3127,6 +3128,10 @@ document.getElementById('igDmInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') sendIgDm();
 });
 
+console.log('Bruce Wayne phone (v2) loaded ✓');
+</script>
+</body>
+</html>
 console.log('Bruce Wayne phone (v2) loaded ✓');
 </script>
 </body>
